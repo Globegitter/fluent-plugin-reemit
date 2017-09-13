@@ -1,7 +1,5 @@
 require 'fluent/version'
-if Fluent::VERSION > '0.12'
-  require 'fluent/event_router'
-end
+require 'fluent/event_router'
 
 module Fluent
   class ReemitOutput < Output
@@ -19,16 +17,7 @@ module Fluent
     def start
       super
       event_router = Engine.instance_variable_get(:@event_router)
-      @router =
-        if event_router
-          if v14?(event_router)
-            V14EventRouter.new(self)
-          else
-            V12EventRouter.new(self)
-          end
-        else
-          V10Engine.new(self)
-        end
+      @router = V14EventRouter.new(self)
     end
 
     def emit(tag, es, chain)
